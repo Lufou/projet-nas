@@ -1,0 +1,33 @@
+Jan 09 08:03:33.978 HYPERVISOR: Release 0.2.21-amd64/Linux (tag 2019071212)
+Jan 09 08:03:33.978 HYPERVISOR: Started on IP = localhost, TCP port = 38777.
+Jan 09 08:03:33.985 HYPERVISOR: exec_cmd: hypervisor version 
+Jan 09 08:03:33.985 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips 
+Jan 09 08:03:33.985 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips
+Jan 09 08:03:33.986 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/9b574074-5dd3-45d1-84f5-385bb8d350ec 
+Jan 09 08:03:33.986 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/9b574074-5dd3-45d1-84f5-385bb8d350ec
+Jan 09 08:03:33.986 HYPERVISOR: exec_cmd: vm create P2 3 c7200 
+Jan 09 08:03:33.989 VM: VM P2 created.
+Jan 09 08:03:33.989 HYPERVISOR: exec_cmd: vm set_con_tcp_port P2 5002 
+Jan 09 08:03:33.989 HYPERVISOR: exec_cmd: c7200 get_mac_addr P2 
+Jan 09 08:03:33.989 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:33.990 HYPERVISOR: exec_cmd: vm slot_add_binding P2 0 0 C7200-IO-FE 
+Jan 09 08:03:33.990 HYPERVISOR: exec_cmd: vm set_disk0 P2 0 
+Jan 09 08:03:33.991 HYPERVISOR: exec_cmd: vm set_ios P2 /home/ldamase/GNS3/images/IOS/c7200-advipservicesk9-mz.152-4.S5.image 
+Jan 09 08:03:33.991 HYPERVISOR: exec_cmd: c7200 set_mac_addr P2 ca03.1990.0000 
+Jan 09 08:03:33.991 HYPERVISOR: exec_cmd: vm set_nvram P2 512 
+Jan 09 08:03:33.992 HYPERVISOR: exec_cmd: vm set_ram P2 512 
+Jan 09 08:03:33.992 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:33.992 HYPERVISOR: exec_cmd: vm slot_add_binding P2 1 0 PA-GE 
+Jan 09 08:03:33.992 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:33.992 HYPERVISOR: exec_cmd: vm slot_add_binding P2 2 0 PA-GE 
+Jan 09 08:03:33.993 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:33.993 HYPERVISOR: exec_cmd: vm slot_add_binding P2 3 0 PA-GE 
+Jan 09 08:03:34.875 HYPERVISOR: exec_cmd: nio create_udp udp-250bf029-97e4-4327-918c-eee0ee3d9176 10010 127.0.0.1 10011 
+Jan 09 08:03:35.092 HYPERVISOR: exec_cmd: vm slot_add_nio_binding P2 1 0 udp-250bf029-97e4-4327-918c-eee0ee3d9176 
+Jan 09 08:03:35.092 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:35.159 HYPERVISOR: exec_cmd: nio create_udp udp-eb221fca-0a5b-49af-816d-8edd10595991 10014 127.0.0.1 10015 
+Jan 09 08:03:35.160 HYPERVISOR: exec_cmd: vm slot_add_nio_binding P2 2 0 udp-eb221fca-0a5b-49af-816d-8edd10595991 
+Jan 09 08:03:35.160 HYPERVISOR: exec_cmd: vm get_status P2 
+Jan 09 08:03:36.284 HYPERVISOR: exec_cmd: nio create_udp udp-f0ad3232-8359-4863-9bca-200211d7e70c 10040 127.0.0.1 10041 
+Jan 09 08:03:36.285 HYPERVISOR: exec_cmd: vm slot_add_nio_binding P2 3 0 udp-f0ad3232-8359-4863-9bca-200211d7e70c 
+Jan 09 08:03:36.285 HYPERVISOR: exec_cmd: vm get_status P2 

@@ -1,0 +1,33 @@
+Jan 09 08:03:34.069 HYPERVISOR: Release 0.2.21-amd64/Linux (tag 2019071212)
+Jan 09 08:03:34.069 HYPERVISOR: Started on IP = localhost, TCP port = 36089.
+Jan 09 08:03:34.075 HYPERVISOR: exec_cmd: hypervisor version 
+Jan 09 08:03:34.075 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips 
+Jan 09 08:03:34.075 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips
+Jan 09 08:03:34.075 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/6de83e98-384c-44a4-8cdd-d71d1749eca0 
+Jan 09 08:03:34.076 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/6de83e98-384c-44a4-8cdd-d71d1749eca0
+Jan 09 08:03:34.076 HYPERVISOR: exec_cmd: vm create PE2 4 c7200 
+Jan 09 08:03:34.079 VM: VM PE2 created.
+Jan 09 08:03:34.080 HYPERVISOR: exec_cmd: vm set_con_tcp_port PE2 5003 
+Jan 09 08:03:34.080 HYPERVISOR: exec_cmd: c7200 get_mac_addr PE2 
+Jan 09 08:03:34.080 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:34.081 HYPERVISOR: exec_cmd: vm slot_add_binding PE2 0 0 C7200-IO-FE 
+Jan 09 08:03:34.081 HYPERVISOR: exec_cmd: vm set_disk0 PE2 0 
+Jan 09 08:03:34.084 HYPERVISOR: exec_cmd: vm set_ios PE2 /home/ldamase/GNS3/images/IOS/c7200-advipservicesk9-mz.152-4.S5.image 
+Jan 09 08:03:34.084 HYPERVISOR: exec_cmd: c7200 set_mac_addr PE2 ca04.19a0.0000 
+Jan 09 08:03:34.085 HYPERVISOR: exec_cmd: vm set_nvram PE2 512 
+Jan 09 08:03:34.085 HYPERVISOR: exec_cmd: vm set_ram PE2 512 
+Jan 09 08:03:34.085 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:34.086 HYPERVISOR: exec_cmd: vm slot_add_binding PE2 1 0 PA-GE 
+Jan 09 08:03:34.086 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:34.086 HYPERVISOR: exec_cmd: vm slot_add_binding PE2 2 0 PA-GE 
+Jan 09 08:03:34.087 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:34.087 HYPERVISOR: exec_cmd: vm slot_add_binding PE2 3 0 PA-GE 
+Jan 09 08:03:35.165 HYPERVISOR: exec_cmd: nio create_udp udp-3bdc1981-ae39-4219-9a7f-096298b75e55 10016 127.0.0.1 10017 
+Jan 09 08:03:35.383 HYPERVISOR: exec_cmd: vm slot_add_nio_binding PE2 2 0 udp-3bdc1981-ae39-4219-9a7f-096298b75e55 
+Jan 09 08:03:35.384 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:35.719 HYPERVISOR: exec_cmd: nio create_udp udp-cdf7df10-76fa-4146-ae82-7ad6e617c790 10026 127.0.0.1 10027 
+Jan 09 08:03:35.720 HYPERVISOR: exec_cmd: vm slot_add_nio_binding PE2 1 0 udp-cdf7df10-76fa-4146-ae82-7ad6e617c790 
+Jan 09 08:03:35.720 HYPERVISOR: exec_cmd: vm get_status PE2 
+Jan 09 08:03:36.854 HYPERVISOR: exec_cmd: nio create_udp udp-74cdae8a-6bcf-43cf-911a-48b34b331aaf 10052 127.0.0.1 10053 
+Jan 09 08:03:36.856 HYPERVISOR: exec_cmd: vm slot_add_nio_binding PE2 3 0 udp-74cdae8a-6bcf-43cf-911a-48b34b331aaf 
+Jan 09 08:03:36.856 HYPERVISOR: exec_cmd: vm get_status PE2 

@@ -1,0 +1,27 @@
+Jan 09 08:03:34.241 HYPERVISOR: Release 0.2.21-amd64/Linux (tag 2019071212)
+Jan 09 08:03:34.241 HYPERVISOR: Started on IP = localhost, TCP port = 46245.
+Jan 09 08:03:34.243 HYPERVISOR: exec_cmd: hypervisor version 
+Jan 09 08:03:34.243 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips 
+Jan 09 08:03:34.243 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips
+Jan 09 08:03:34.244 HYPERVISOR: exec_cmd: hypervisor working_dir /home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/76749ed8-355b-402a-86b2-7053a415d781 
+Jan 09 08:03:34.244 GENERAL: working_dir=/home/ldamase/GNS3/projects/tp_nas/project-files/dynamips/76749ed8-355b-402a-86b2-7053a415d781
+Jan 09 08:03:34.244 HYPERVISOR: exec_cmd: vm create CE3 8 c7200 
+Jan 09 08:03:34.248 VM: VM CE3 created.
+Jan 09 08:03:34.248 HYPERVISOR: exec_cmd: vm set_con_tcp_port CE3 5007 
+Jan 09 08:03:34.248 HYPERVISOR: exec_cmd: c7200 get_mac_addr CE3 
+Jan 09 08:03:34.249 HYPERVISOR: exec_cmd: vm get_status CE3 
+Jan 09 08:03:34.249 HYPERVISOR: exec_cmd: vm slot_add_binding CE3 0 0 C7200-IO-FE 
+Jan 09 08:03:34.249 HYPERVISOR: exec_cmd: vm set_disk0 CE3 0 
+Jan 09 08:03:34.250 HYPERVISOR: exec_cmd: vm set_ios CE3 /home/ldamase/GNS3/images/IOS/c7200-advipservicesk9-mz.152-4.S5.image 
+Jan 09 08:03:34.250 HYPERVISOR: exec_cmd: c7200 set_mac_addr CE3 ca08.3bbd.0000 
+Jan 09 08:03:34.250 HYPERVISOR: exec_cmd: vm set_nvram CE3 512 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm set_ram CE3 512 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm get_status CE3 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm slot_add_binding CE3 1 0 PA-GE 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm get_status CE3 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm slot_add_binding CE3 2 0 PA-GE 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm get_status CE3 
+Jan 09 08:03:34.251 HYPERVISOR: exec_cmd: vm slot_add_binding CE3 3 0 PA-GE 
+Jan 09 08:03:36.323 HYPERVISOR: exec_cmd: nio create_udp udp-235c32f5-8824-442a-b009-d0055ce19f2b 10044 127.0.0.1 10045 
+Jan 09 08:03:36.541 HYPERVISOR: exec_cmd: vm slot_add_nio_binding CE3 1 0 udp-235c32f5-8824-442a-b009-d0055ce19f2b 
+Jan 09 08:03:36.542 HYPERVISOR: exec_cmd: vm get_status CE3 
