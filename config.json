@@ -1,5 +1,5 @@
 {
-    "Project_name": "h",
+    "Project_name": "hamie1",
     "P1": {
         "Type":"c7200",
         "interfaces":[
@@ -43,7 +43,7 @@
               }
         ],
     "OSPF_id": "3.3.3.3",
-    "OSPF_neighbour": [
+    "OSPF_neighboripv4": [
       [
         "192.168.1.0",
         "0.0.0.255",
@@ -95,11 +95,6 @@
             }
         ],
     "OSPF_id": "4.4.4.4",
-    "OSPF_neighbour": [
-    [
-        
-    ]
-    ],
     "ipcef": true
     },
     "P3": {
@@ -135,11 +130,6 @@
             }
         ],
     "OSPF_id": "5.5.5.5",
-    "OSPF_neighbour": [
-    [
-        
-    ]
-    ],
     "ipcef": true
     },
     "PE1": {
@@ -161,7 +151,6 @@
                   "255.255.255.0"
                 ],
                 "OSPF_area": 0,
-                "MPLS": false,
                 "VRF":"as100"
               },
               {
@@ -180,13 +169,9 @@
               }
         ],
     "OSPF_id": "1.1.1.1",
-    "OSPF_neighbour": [
-      [
-      ]
-    ],
     "BGP": {
         "AS": "101",
-        "neighbor": [
+        "neighbors": [
           {
             "AS": 101,
             "addr": "2.2.2.2"
@@ -221,7 +206,6 @@
                   "192.168.2.2",
                   "255.255.255.0"
                 ],
-                "MPLS": false,
                 "VRF":"as102"
               },
               {
@@ -240,13 +224,9 @@
               }
         ],
     "OSPF_id": "2.2.2.2",
-    "OSPF_neighbour": [
-      [
-      ]
-    ],
     "BGP": {
         "AS": "101",
-        "neighbor": [
+        "neighbors": [
           {
             "AS": 101,
             "addr": "1.1.1.1"
@@ -272,13 +252,12 @@
                 "IPv4": [
                   "192.168.1.1",
                   "255.255.255.0"
-                ],
-                "MPLS": false
+                ]
               }
         ],
     "BGP": {
         "AS": "100",
-        "neighbor": [
+        "neighbors": [
           {
             "AS": 101,
             "addr": "192.168.1.2"
@@ -296,13 +275,12 @@
                 "IPv4": [
                   "192.168.2.1",
                   "255.255.255.0"
-                ],
-                "MPLS": false
+                ]
               }
         ],
     "BGP": {
         "AS": "102",
-        "neighbor": [
+        "neighbors": [
           {
             "AS": 101,
             "addr": "192.168.2.2"
@@ -316,8 +294,7 @@
         "interfaces":[
               {
                 "InterfaceName": "GigabitEthernet1/0",
-                "Link": "PE1",
-                "MPLS": false
+                "Link": "PE1"
               }
         ],
     "ipcef": true
@@ -327,8 +304,7 @@
         "interfaces":[
               {
                 "InterfaceName": "GigabitEthernet1/0",
-                "Link": "PE2",
-                "MPLS": false
+                "Link": "PE2"
               }
         ],
     "ipcef": true
