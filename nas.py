@@ -20,6 +20,7 @@ with open('config.json') as json_file:
     data = json.load(json_file)
     project_name = data["Project_name"]
 
+
 # Retrieve the links between the routers
 links={}
 for router_name in data:
@@ -50,14 +51,14 @@ for router_name in data:
 address = "http://localhost:3080"
 
 # Prepare the data for the POST request
-data = {
+data1 = {
     "name": project_name
 }
 
 # Prepare the POST request to the GNS3 API
 url = f"{address}/v2/projects"
 headers = {'Content-type': 'application/json'}
-response = requests.post(url, data=json.dumps(data), headers=headers)
+response = requests.post(url, data=json.dumps(data1), headers=headers)
 
 # Check the response status code
 if response.status_code == 201:
@@ -88,7 +89,7 @@ node_ids={}
 for router, template in routers.items():
     # Dynamips should be treated as a different case
     if template=="c7200":
-        data = {
+        data1 = {
         "symbol": ":/symbols/router.svg",
         "name": router,
         "properties": {"platform": "c7200", "nvram": 512, "image": "c7200-advipservicesk9-mz.152-4.S5.image", "ram": 512, "slot0": "IO-FE","slot1": "PA-GE", "slot2": "PA-GE" , "slot3":"PA-GE", "system_id": "FTX0945W0MY"},
@@ -96,7 +97,7 @@ for router, template in routers.items():
         "compute_id":"local"
         }
     else:
-        data={
+        data1={
             "name": router,
             "node_type": template,
             "compute_id": "local"
@@ -104,7 +105,7 @@ for router, template in routers.items():
 
     # Prepare the POST request to the GNS3 API
     url = f"{address}/v2/projects/{project_id}/nodes"
-    response = requests.post(url, data=json.dumps(data), headers=headers)
+    response = requests.post(url, data=json.dumps(data1), headers=headers)
 
     if response.status_code == 201:
         print(f"Node '{router}' of type '{template}' added to project '{project_id}'.")
@@ -185,7 +186,7 @@ for router, port in ports.items():
     #    tn.write(b"conf t\r")
     #    tn.write(b"ipv6 unicast-routing\r")
     #    tn.write(b"end\r")
-    
+
     # Assign different ip address
     for interface in data[router]['interfaces']:
         interface_name=interface["InterfaceName"]
@@ -282,26 +283,6 @@ for router, port in ports.items():
     #        tn.write(f"network {neighbor[0]} {neighbor[1]} area {neighbor[2]}\r".encode())
     
 
-    # Check if MBBGP
-    if "BGP" in data[router]:
-        ass=data[router]["BGP"]["AS"]
-        tn.write(b"end\r")  
-        tn.write(b"conf t\r")
-        tn.write(f"router bgp {ass}\r".encode())
-        tn.write(b"no bgp default ipv4-unicast\r")
-
-        # Check if MBGP neighbors
-        if "neighbors" in data[router]["BGP"]:
-            # Configure MBGP neighbors
-            neighbors=data[router]["BGP"]["neighbors"]
-            for neighbor in neighbors:
-                tn.write(f"neighbor {neighbor['addr']} remote-as {neighbor['AS']}\r".encode())
-                tn.write(f"neighbor {neighbor['addr']} update-source Loopback 0\r".encode())
-        
-        tn.write(b"end\r")  
-
-        # VPN on MBGP
-
     # Check Express forwarding
     if "ipcef" in data[router]:
         tn.write(b"end\r")  
@@ -326,7 +307,6 @@ for router, port in ports.items():
     # Check if VRF
     if "VRF" in data[router]:
         for vrf in data[router]["VRF"]:
-
             # Activate VRF
             vrf_name=vrf["name"]
             vrf_rd=vrf["rd"]
@@ -346,12 +326,7 @@ for router, port in ports.items():
             for rt_out in vrf_export:
                 tn.write(f"route-target export {rt_out}\r".encode())
             
-            tn.write(b"end\r")
-
-
-            # Activate VRF on OSPF
-
-            # Activate VRF on BGP
+            tn.write(b"end\r") 
 
         # Activate VRF on the interfaces
         for interface in data[router]['interfaces']:
@@ -367,15 +342,84 @@ for router, port in ports.items():
                 # Enable VRF
                 tn.write(f"ip vrf forwarding {vrf_name}\r".encode())
 
-                tn.write(b"end")
+                tn.write(b"end\r")
+
+    # Check if BGP
+    if "BGP" in data[router]:
+        ass=data[router]["BGP"]["AS"]
+        tn.write(b"end\r")  
+        tn.write(b"conf t\r")
+        tn.write(f"router bgp {ass}\r".encode())
+        tn.write(b"bgp log-neighbor-changes\r")
+        if "redistribute" in data[router]["BGP"]:
+            tn.write(b"redistribute connected\r")
+        tn.write(b"end\r")
+
+
+        # Check if BGP neighbors
+        if "neighbors" in data[router]["BGP"]:
+            tn.write(b"end\r")  
+            tn.write(b"conf t\r")
+            tn.write(f"router bgp {ass}\r".encode())
+
+            # Configure BGP neighbors
+            neighbors=data[router]["BGP"]["neighbors"]
+            for neighbor in neighbors:
+                tn.write(f"neighbor {neighbor['addr']} remote-as {neighbor['AS']}\r".encode())
+                tn.write(f"neighbor {neighbor['addr']} update-source Loopback 0\r".encode()) 
+            
+
+        # Check if address-family ipv4
+        if "neighbors_ipv4" in data[router]["BGP"]:
+            tn.write(b"end\r")  
+            tn.write(b"conf t\r")
+            tn.write(f"router bgp {ass}\r".encode())
+            tn.write(b"address-family ipv4\r")
+            neighbors=data[router]["BGP"]["neighbors_ipv4"]
+            for neighbor in neighbors:
+                if "active" in neighbor:
+                    tn.write(f"neighbor {neighbor['addr']} activate\r".encode())
+                else: 
+                    tn.write(f"no neighbor {neighbor['addr']} activate\r".encode())
+            tn.write(b"end\r")
+
+        # Check if address-family vpnv4
+        if "neighbors_vpnv4" in data[router]["BGP"]:
+            neighbors=data[router]["BGP"]["neighbors_vpnv4"]
+            tn.write(b"end\r")  
+            tn.write(b"conf t\r")
+            tn.write(f"router bgp {ass}\r".encode())
+            tn.write(b"address-family vpnv4\r")
+            for neighbor in neighbors:
+                    tn.write(f"neighbor {neighbor['addr']} activate\r".encode())
+                    tn.write(f"neighbor {neighbor['addr']} send-community both\r".encode())
+            tn.write(b"exit-address-family\r")
+            tn.write(b"end\r")
+
+        # Check address-family ipv4 vrf
+        if "neighbors_vrf" in data[router]["BGP"]:
+            neighbors=data[router]["BGP"]["neighbors_vrf"]
+            tn.write(b"end\r")  
+            tn.write(b"conf t\r")
+            tn.write(f"router bgp {ass}\r".encode())
+            for neighbor in neighbors:
+                vrf_name=neighbor["VRF"]
+                voisins=neighbor["neighbors"]
+                tn.write(f"address-family ipv4 vrf {vrf_name}\r".encode())
+                for voisin in voisins:
+                    tn.write(f"neighbor {voisin['addr']} remote-as {voisin['AS']}\r".encode())
+                    tn.write(f"neighbor {voisin['addr']} activate\r".encode())
+                tn.write(b"exit-address-family\r")
+                tn.write(b"end\r")
+
+        tn.write(b"end\r") 
 
     # Save configuration
     tn.write(b"end\r")
-    tn.write(b"write")
+    tn.write(b"write\r")
     tn.write(b"\r")
 
     print("Ending")
-    time.sleep(5)
 
 
 

@@ -1,5 +1,5 @@
 {
-    "Project_name": "hamie1",
+    "Project_name": "hamie2",
     "P1": {
         "Type":"c7200",
         "interfaces":[
@@ -176,15 +176,36 @@
             "AS": 101,
             "addr": "2.2.2.2"
           }
+        ],
+        "neighbors_ipv4": [
+          {
+            "addr": "2.2.2.2"
+          }
+        ],
+        "neighbors_vpnv4": [
+          {
+            "addr": "2.2.2.2"
+          }
+        ],
+        "neighbors_vrf": [
+          {
+            "VRF": "as100",
+            "neighbors":[
+              {
+                "AS":"100",
+                "addr":"192.168.1.1"
+            }
+          ]
+          }
         ]
     },
-    "VRF": 
+    "VRF": [
         {
           "name": "as100",
           "rd": "100:110",
           "rt_import": "100:1000",
           "rt_export": "100:1000"
-        },
+        }],
     
     "ipcef": true
     },
@@ -225,21 +246,42 @@
         ],
     "OSPF_id": "2.2.2.2",
     "BGP": {
-        "AS": "101",
-        "neighbors": [
-          {
-            "AS": 101,
-            "addr": "1.1.1.1"
+      "AS": "101",
+      "neighbors": [
+        {
+          "AS": 101,
+          "addr": "1.1.1.1"
+        }
+      ],
+      "neighbors_ipv4": [
+        {
+          "addr": "1.1.1.1"
+        }
+      ],
+      "neighbors_vpnv4": [
+        {
+          "addr": "2.2.2.2"
+        }
+      ],
+      "neighbors_vrf": [
+        {
+          "VRF": "as102",
+          "neighbors":[
+            {
+              "AS":"102",
+              "addr":"192.168.2.1"
           }
         ]
-    },
-    "VRF": 
+        }
+      ]
+  },
+    "VRF": [
         {
           "name": "as102",
           "rd": "100:110",
           "rt_import": "100:1000",
           "rt_export": "100:1000"
-        },
+        }],
     
     "ipcef": true
     },
@@ -257,6 +299,7 @@
         ],
     "BGP": {
         "AS": "100",
+        "redistribute":true,
         "neighbors": [
           {
             "AS": 101,
@@ -280,6 +323,7 @@
         ],
     "BGP": {
         "AS": "102",
+        "redistribute":true,
         "neighbors": [
           {
             "AS": 101,
