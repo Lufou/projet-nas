@@ -1,0 +1,350 @@
+{
+    "Project_name": "chakib11",
+    "P1": {
+        "Type":"c7200",
+        "interfaces":[
+            {
+                "InterfaceName": "Loopback0",
+                "IPv4": [
+                  "3.3.3.3",
+                  "255.255.255.255"
+                ],
+                "OSPF_area": 0
+              },
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "P2",
+                "IPv4": [
+                  "192.168.101.1",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:101::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+              },
+              {
+                "interfaceName": "GigabitEthernet2/0",
+                "Link": "PE1",
+                "IPv4": [
+                  "192.168.100.2",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:100::2/64",
+                "OSPF_area": 0,
+                "MPLS": true
+              },
+              {
+                "interfaceName": "GigabitEthernet3/0",
+                "Link": "P3",
+                "IPv4": [
+                  "192.168.102.1",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:102::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+              }
+        ],
+    "OSPF_id": "3.3.3.3",
+    "OSPF_neighbour": [
+      [
+        "192.168.1.0",
+        "0.0.0.255",
+        "0"
+      ]
+    ],
+    "ipcef": true
+    },
+    "P2": {
+        "Type":"c7200",
+        "interfaces":[
+            {
+                "InterfaceName": "Loopback0",
+                "IPv4": [
+                "4.4.4.4",
+                "255.255.255.255"
+                ],
+                "OSPF_area": 0
+            },
+            {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "P1",
+                "IPv4": [
+                "192.168.101.2",
+                "255.255.255.0"
+                ],
+                "IPv6": "192:168:101::2/64",
+                "OSPF_area": 0,
+                "MPLS": true
+            },
+            {
+                "interfaceName": "GigabitEthernet2/0",
+                "Link": "PE2",
+                "IPv4": [
+                "192.168.200.1",
+                "255.255.255.0"
+                ],
+                "IPv6": "192:168:200::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+            },
+            {
+                "interfaceName": "GigabitEthernet3/0",
+                "Link": "P3",
+                "IPv4": [
+                "192.168.103.2",
+                "255.255.255.0"
+                ],
+                "IPv6": "192:168:103::2/64",
+                "OSPF_area": 0,
+                "MPLS": true
+            }
+        ],
+    "OSPF_id": "4.4.4.4",
+    "OSPF_neighbour": [
+    [
+        
+    ]
+    ],
+    "ipcef": true
+    },
+    "P3": {
+        "Type":"c7200",
+        "interfaces":[
+            {
+                "InterfaceName": "Loopback0",
+                "IPv4": [
+                "5.5.5.5",
+                "255.255.255.255"
+                ],
+                "OSPF_area": 0
+            },
+            {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "P2",
+                "IPv4": [
+                "192.168.103.1",
+                "255.255.255.0"
+                ],
+                "IPv6": "192:168:103::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+            },
+            {
+                "interfaceName": "GigabitEthernet3/0",
+                "Link": "P1",
+                "IPv4": [
+                "192.168.102.2",
+                "255.255.255.0"
+                ],
+                "IPv6": "192:168:102::2/64",
+                "OSPF_area": 0,
+                "MPLS": true
+            }
+        ],
+    "OSPF_id": "5.5.5.5",
+    "OSPF_neighbour": [
+    [
+        
+    ]
+    ],
+    "ipcef": true
+    },
+    "PE1": {
+        "Type":"c7200",
+        "interfaces":[
+            {
+                "InterfaceName": "Loopback0",
+                "IPv4": [
+                  "1.1.1.1",
+                  "255.255.255.255"
+                ],
+                "OSPF_area": 0
+              },
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "CE1",
+                "IPv4": [
+                  "192.168.1.2",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:1::2/64",
+                "OSPF_area": 0,
+                "MPLS": false,
+                "VRF":"as100"
+              },
+              {
+                "interfaceName": "GigabitEthernet2/0",
+                "Link": "P1",
+                "IPv4": [
+                  "192.168.100.1",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:100::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+              },
+              {
+                "interfaceName": "GigabitEthernet3/0",
+                "Link": "CE3"
+              }
+        ],
+    "OSPF_id": "1.1.1.1",
+    "OSPF_neighbour": [
+      [
+      ]
+    ],
+    "BGP": {
+        "AS": "101",
+        "neighbor": [
+          {
+            "AS": 101,
+            "addr": "2.2.2.2"
+          }
+        ]
+    },
+    "VRF": 
+        {
+          "name": "as100",
+          "rd": "100:110",
+          "rt_import": "100:1000",
+          "rt_export": "100:1000"
+        },
+    
+    "ipcef": true
+    },
+    "PE2": {
+        "Type":"c7200",
+        "interfaces":[
+            {
+                "InterfaceName": "Loopback0",
+                "IPv4": [
+                  "2.2.2.2",
+                  "255.255.255.255"
+                ],
+                "OSPF_area": 0
+              },
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "CE2",
+                "IPv4": [
+                  "192.168.2.2",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:2::2/64",
+                "MPLS": false,
+                "VRF":"as102"
+              },
+              {
+                "interfaceName": "GigabitEthernet2/0",
+                "Link": "P2",
+                "IPv4": [
+                  "192.168.200.2",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:100::1/64",
+                "OSPF_area": 0,
+                "MPLS": true
+              },
+              {
+                "interfaceName": "GigabitEthernet3/0",
+                "Link": "CE4"
+              }
+        ],
+    "OSPF_id": "2.2.2.2",
+    "OSPF_neighbour": [
+      [
+      ]
+    ],
+    "BGP": {
+        "AS": "101",
+        "neighbor": [
+          {
+            "AS": 101,
+            "addr": "1.1.1.1"
+          }
+        ]
+    },
+    "VRF": 
+        {
+          "name": "as102",
+          "rd": "100:110",
+          "rt_import": "100:1000",
+          "rt_export": "100:1000"
+        },
+    
+    "ipcef": true
+    },
+    "CE1": {
+        "Type":"c7200",
+        "interfaces":[
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "PE1",
+                "IPv4": [
+                  "192.168.1.1",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:1::1/64",
+                "MPLS": false
+              }
+        ],
+    "BGP": {
+        "AS": "100",
+        "neighbor": [
+          {
+            "AS": 101,
+            "addr": "192.168.1.2"
+          }
+        ]
+    },
+    "ipcef": true
+    },
+    "CE2": {
+        "Type":"c7200",
+        "interfaces":[
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "PE2",
+                "IPv4": [
+                  "192.168.2.1",
+                  "255.255.255.0"
+                ],
+                "IPv6": "192:168:2::1/64",
+                "MPLS": false
+              }
+        ],
+    "BGP": {
+        "AS": "102",
+        "neighbor": [
+          {
+            "AS": 101,
+            "addr": "192.168.2.2"
+          }
+        ]
+    },
+    "ipcef": true
+    },
+    "CE3": {
+        "Type":"c7200",
+        "interfaces":[
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "PE1",
+                "MPLS": false
+              }
+        ],
+    "ipcef": true
+    },
+    "CE4": {
+        "Type":"c7200",
+        "interfaces":[
+              {
+                "InterfaceName": "GigabitEthernet1/0",
+                "Link": "PE2",
+                "MPLS": false
+              }
+        ],
+    "ipcef": true
+    }
+}
