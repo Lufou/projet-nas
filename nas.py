@@ -113,6 +113,7 @@ for router, template in routers.items():
     else:
         print(f"Error adding node to project: {response.status_code} {response.reason}")
         print(response.text)
+print(node_ids)
 
 # Make the links between the routers
 for router, allinks in links.items():
@@ -160,17 +161,19 @@ ip="127.0.0.1"
 for router, port in ports.items():
     # Create a new Telnet connection
     tn = telnetlib.Telnet(ip, port)
-    print("created")
+    print("Created")
 
     # Initialization
     tn.write(b"no\r")
     tn.write(b"\r")
     tn.write(b"enable\r")  
+    time.sleep(0.5)
 
     # Change the hostname
     tn.write(b"conf t\r")
     tn.write(f"hostname {router}\r".encode())
     tn.write(b"end\r")
+    time.sleep(0.5)
 
     # Check if ipv6
     #ipv6_present = False
@@ -186,6 +189,34 @@ for router, port in ports.items():
     #    tn.write(b"conf t\r")
     #    tn.write(b"ipv6 unicast-routing\r")
     #    tn.write(b"end\r")
+
+    # Check if VRF
+    if "VRF" in data[router]:
+        for vrf in data[router]["VRF"]:
+            # Activate VRF
+            vrf_name=vrf["name"]
+            vrf_rd=vrf["rd"]
+            vrf_import=vrf["rt_import"]
+            vrf_export=vrf["rt_export"]
+
+            tn.write(b"end\r")  
+            tn.write(b"conf t\r")
+            tn.write(f"vrf definition {vrf_name}\r".encode())
+
+            # Configure Route Distinguisher
+            tn.write(f"rd {vrf_rd}\r".encode())
+
+            # Configure Route Target in and out
+            for rt_in in vrf_import:
+                tn.write(f"route-target import {rt_in}\r".encode())
+            for rt_out in vrf_export:
+                tn.write(f"route-target export {rt_out}\r".encode())
+            
+            # IP address family
+            tn.write(b"address-family ipv4\r")
+
+            tn.write(b"end\r") 
+            time.sleep(0.5)
 
     # Assign different ip address
     for interface in data[router]['interfaces']:
@@ -203,9 +234,21 @@ for router, port in ports.items():
             # Configure the address
             tn.write(f"ip add {ipv4[0]} {ipv4[1]}\r".encode())
 
+            if "VRF" in interface:
+                # Activate VRF on the interfaces
+                vrf_name=interface["VRF"]
+
+                # Enable VRF
+                tn.write(f"vrf forwarding {vrf_name}\r".encode())
+
+            # Configure the address one more time because vrf erases it
+            tn.write(f"ip add {ipv4[0]} {ipv4[1]}\r".encode())
+
             # No shutdown
             tn.write(b"no shutdown\r")
+
             tn.write(b"end\r")
+        time.sleep(0.5)
         
         # Configure ipv6 address
         #if "IPv6" in interface:
@@ -232,7 +275,7 @@ for router, port in ports.items():
         # OSPFv2 activation
         tn.write(b"router ospf 1\r")
         tn.write(f"router-id {ospf_id}\r".encode())
-
+        time.sleep(0.5)
         # OSPFv3 if ipv6
         #if ipv6_present:
             #tn.write(b"end\r")  
@@ -253,7 +296,7 @@ for router, port in ports.items():
 
             # Configuration of the ospf area
             tn.write(f"ip ospf 1 area {ospf_area}\r".encode())
-            
+            time.sleep(0.5)
             # If ipv6 in interface, OSPFv3
             #if "IPv6" in interface:
                 #tn.write(f"ipv6 ospf 2 area {ospf_area}\r".encode())
@@ -270,6 +313,7 @@ for router, port in ports.items():
         # We set each neighbor
         for neighbor in neighbors:
             tn.write(f"network {neighbor[0]} {neighbor[1]} area {neighbor[2]}\r".encode())
+            time.sleep(0.5)
 
     # Check OSPF Neighbors for ipv6
     #if "OSPF_neighboripv6" in data[router]:
@@ -289,6 +333,7 @@ for router, port in ports.items():
         tn.write(b"conf t\r")
         tn.write(b"ip cef\r")
         tn.write(b"end\r")
+        time.sleep(0.5)
 
     # Check if MPLS
     for interface in data[router]['interfaces']:
@@ -303,46 +348,8 @@ for router, port in ports.items():
             # Configuration of mpls in the interface
             tn.write(b"mpls ip\r")
             tn.write(b"end\r")
+            time.sleep(0.5)
     
-    # Check if VRF
-    if "VRF" in data[router]:
-        for vrf in data[router]["VRF"]:
-            # Activate VRF
-            vrf_name=vrf["name"]
-            vrf_rd=vrf["rd"]
-            vrf_import=vrf["rt_import"]
-            vrf_export=vrf["rt_export"]
-
-            tn.write(b"end\r")  
-            tn.write(b"conf t\r")
-            tn.write(f"ip vrf {vrf_name}\r".encode())
-
-            # Configure Route Distinguisher
-            tn.write(f"rd {vrf_rd}\r".encode())
-
-            # Configure Route Target in and out
-            for rt_in in vrf_import:
-                tn.write(f"route-target import {rt_in}\r".encode())
-            for rt_out in vrf_export:
-                tn.write(f"route-target export {rt_out}\r".encode())
-            
-            tn.write(b"end\r") 
-
-        # Activate VRF on the interfaces
-        for interface in data[router]['interfaces']:
-            if "VRF" in interface:
-                interface_name=interface["InterfaceName"]
-                vrf_name=interface["VRF"]
-                tn.write(b"end\r")  
-                tn.write(b"conf t\r")
-                
-                # Configuration in an interface
-                tn.write(f"int {interface_name}\r".encode())
-
-                # Enable VRF
-                tn.write(f"ip vrf forwarding {vrf_name}\r".encode())
-
-                tn.write(b"end\r")
 
     # Check if BGP
     if "BGP" in data[router]:
@@ -354,6 +361,7 @@ for router, port in ports.items():
         if "redistribute" in data[router]["BGP"]:
             tn.write(b"redistribute connected\r")
         tn.write(b"end\r")
+        time.sleep(0.5)
 
 
         # Check if BGP neighbors
@@ -367,6 +375,7 @@ for router, port in ports.items():
             for neighbor in neighbors:
                 tn.write(f"neighbor {neighbor['addr']} remote-as {neighbor['AS']}\r".encode())
                 tn.write(f"neighbor {neighbor['addr']} update-source Loopback 0\r".encode()) 
+                time.sleep(0.5)
             
 
         # Check if address-family ipv4
@@ -381,6 +390,7 @@ for router, port in ports.items():
                     tn.write(f"neighbor {neighbor['addr']} activate\r".encode())
                 else: 
                     tn.write(f"no neighbor {neighbor['addr']} activate\r".encode())
+                time.sleep(0.5)
             tn.write(b"end\r")
 
         # Check if address-family vpnv4
@@ -393,6 +403,7 @@ for router, port in ports.items():
             for neighbor in neighbors:
                     tn.write(f"neighbor {neighbor['addr']} activate\r".encode())
                     tn.write(f"neighbor {neighbor['addr']} send-community both\r".encode())
+                    time.sleep(0.5)
             tn.write(b"exit-address-family\r")
             tn.write(b"end\r")
 
@@ -409,16 +420,17 @@ for router, port in ports.items():
                 for voisin in voisins:
                     tn.write(f"neighbor {voisin['addr']} remote-as {voisin['AS']}\r".encode())
                     tn.write(f"neighbor {voisin['addr']} activate\r".encode())
+                    time.sleep(0.5)
                 tn.write(b"exit-address-family\r")
                 tn.write(b"end\r")
-
+                time.sleep(0.5)
         tn.write(b"end\r") 
 
     # Save configuration
     tn.write(b"end\r")
     tn.write(b"write\r")
     tn.write(b"\r")
-
+    time.sleep(0.5)
     print("Ending")
 
 
