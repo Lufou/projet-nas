@@ -1,5 +1,6 @@
 import json
 import requests
+
 import telnetlib
 import time
 
@@ -15,10 +16,12 @@ def check(links, node1, node2):
             return i[0][15]
 
 
+
 #We open our configuration file
 with open('config.json') as json_file:
     data = json.load(json_file)
     project_name = data["Project_name"]
+
 
 
 # Retrieve the links between the routers
@@ -33,7 +36,6 @@ for router_name in data:
                 l.append(interface['Link'])
                 list_interfaces.append(l)
         links[router_name]=list_interfaces
-
 
 
 # Adding all the routers available as keys and their template as values in a dictionnary 
@@ -51,6 +53,7 @@ for router_name in data:
 address = "http://localhost:3080"
 
 # Prepare the data for the POST request
+
 data1 = {
     "name": project_name
 }
@@ -58,7 +61,9 @@ data1 = {
 # Prepare the POST request to the GNS3 API
 url = f"{address}/v2/projects"
 headers = {'Content-type': 'application/json'}
+
 response = requests.post(url, data=json.dumps(data1), headers=headers)
+
 
 # Check the response status code
 if response.status_code == 201:
@@ -433,12 +438,3 @@ for router, port in ports.items():
     time.sleep(0.5)
     print("Ending")
 
-
-
-
-
-
-
-
-    
-    
