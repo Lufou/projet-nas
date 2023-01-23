@@ -1,7 +1,6 @@
 import sys
 import requests
 import json
-import nas
 import telnetlib
 import time
 
@@ -9,7 +8,8 @@ import time
 
 project_id = ""
 
-def serverQuery(endpoint, type="get", data1={}):
+def serverQuery(endpoint, type="get", data1={}, jsonPayload=None):
+    global project_id
     address = "http://localhost:3080"
     url = ""
     if (project_id != ""):
@@ -20,6 +20,8 @@ def serverQuery(endpoint, type="get", data1={}):
     if (type == "get"):
         return requests.get(url, headers=headers)
     elif (type == "post"):
+        if jsonPayload is not None:
+            return requests.post(url, json=jsonPayload, headers=headers)
         return requests.post(url, data=json.dumps(data1), headers=headers)
 
 def showHelp():
@@ -33,7 +35,8 @@ def getRouterByName(name):
     global project_id
     try:
         # Prepare the data for the POST request
-        project_id = list(filter(lambda p: p['status'] == 'opened', serverQuery("projects").json()))[0]['project_id']
+        if (project_id is ""):
+            project_id = list(filter(lambda p: p['status'] == 'opened', serverQuery("projects").json()))[0]['project_id']
     except requests.exceptions.ConnectionError as e:
         print("Error: Impossible to connect to GNS3 server.\n")
         exit(1)
@@ -52,29 +55,38 @@ if __name__ == '__main__':
         showHelp()
     else:
         if (sys.argv[1] == "init"):
-            nas.start()
+            import nas
         elif (sys.argv[1] == "addCustomer"):
             # add customer <pe> <name> <asn> <flux vpn>
-            if (len(sys.argv) != 9):
-                print("Invalid command: addCustomer <pe> <name> <ipAddress> <interfaceName1> <interfaceName2> <asn> <flux vpn>")
+            if (len(sys.argv) < 10 or len(sys.argv) > 12):
+                print("Invalid command: addCustomer <pe> <name> <ipAddressCE> <ipAddressPE> <interfaceName1> <interfaceName2> <asn> <vrf> <rd> <rt>")
             else:
                 toAttachTo = sys.argv[2]
                 customerName = sys.argv[3]
                 ipAddress = sys.argv[4]
-                interfaceName1 = sys.argv[5]
-                interfaceName2 = sys.argv[6]
+                ipAddress2 = sys.argv[5]
+                interfaceName1 = sys.argv[6]
+                interfaceName2 = sys.argv[7]
                 try:
-                    asn = int(sys.argv[7])
+                    asn = int(sys.argv[8])
                 except ValueError:
                     print("Invalid ASN.")
                     exit(1)
-                fluxVPN = sys.argv[8]
+                vrf = sys.argv[9]
+                rd = None
+                rt = None
+                newVrf = len(sys.argv) > 10
+                if newVrf:
+                    rd = sys.argv[10]
+                    rt = sys.argv[10]
                 # récupère la topologie GNS3, les routeurs etc...
+                print("Get PE router")
                 toAttachTo = getRouterByName(toAttachTo)
                 ports = {}
                 ports[toAttachTo["node_id"]] = toAttachTo["console"]
                 portsDest = toAttachTo["ports"]
                 # check si l'interface existe n'est pas déjà connecté
+                print("Get links")
                 links = serverQuery("links").json()
                 exist = False
                 for l in links:
@@ -95,20 +107,21 @@ if __name__ == '__main__':
                     "node_type": "dynamips",
                     "compute_id":"local"
                 }
-                
+
+                print("Create new router")
                 response = serverQuery("nodes", "post", data)
                 new_node_id = ""
                 portsFrom = {}
-                newRouter = None
                 if response.status_code == 201:
                     print(f"Node '{customerName}' added to project '{project_id}'.")
                     new_node_id = response.json()["node_id"]
-                    newRouter = getRouterByName(customerName)
-                    portsFrom = newRouter["ports"]
                 else:
                     print(f"Error adding node to project: {response.status_code} {response.reason}")
                     print(response.text)
+                    exit(1)
 
+                newRouter = getRouterByName(customerName)
+                portsFrom = newRouter["ports"]
                 adapter1 = -1
                 adapter2 = -1
                 for p in portsFrom:
@@ -136,7 +149,8 @@ if __name__ == '__main__':
                         }
                     ]
                 }
-                response = serverQuery("links", "post", payload)
+                print("Create links")
+                response = serverQuery("links", "post", jsonPayload=payload)
 
                 if response.status_code == 201:
                     print("Link created successfully")
@@ -144,29 +158,42 @@ if __name__ == '__main__':
                     print("Failed to create link : "+response.text)
                     exit(1)
                 
-                
+                print("Starting the new router")
                 response = serverQuery(f"nodes/{new_node_id}/start", "post")
                 ports[new_node_id] = newRouter["console"]
-                if response.status_code == 201:
+                if response.status_code == 200:
                     print("New node successfully started.")
                 else:
                     print("Failed to start new node : " + response.text)
                     exit(1)
-                time.sleep(3)
+                time.sleep(10)
 
                 tn = telnetlib.Telnet("127.0.0.1", ports[new_node_id])
+                time.sleep(1)
                 print("Opened telnet session for the new node")
+                
+                # Config of the new node
 
-                 # Initialization
-                tn.write(b"no\r")
                 tn.write(b"\r")
+                time.sleep(1)
+                tn.write(b"\r")
+                time.sleep(1)
+                tn.write(b"\r")
+                time.sleep(1)
+                tn.write(b"no\r")
+                time.sleep(1)
+                tn.write(b"\r")
+                time.sleep(1)
+                tn.write(b"\r")
+                time.sleep(5)
+                tn.write(b"\r")
+                time.sleep(1)
                 tn.write(b"enable\r")  
-
-                # Change the hostname
                 tn.write(b"conf t\r")
                 tn.write(f"hostname {customerName}\r".encode())
                 tn.write(b"ip cef\r")
                 tn.write(b"end\r")
+                time.sleep(0.5)
 
                 tn.write(b"conf t\r")
                 
@@ -174,14 +201,63 @@ if __name__ == '__main__':
                 tn.write(f"ip address {ipAddress} 255.255.255.0\r".encode())
                 tn.write(b"no shutdown\r")
                 tn.write(b"exit\r")
+                time.sleep(0.5)
 
-                tn.write(f"router bgp {asn}")
-                    
+                tn.write(f"router bgp {asn}\r".encode())
+                tn.write(b"redistribute connected\r")
+                tn.write(f"neighbor {ipAddress2} remote-as 101\r".encode())
+                tn.write(b"exit\r")
+                time.sleep(0.5)
             
                 tn.write(b"end\r")
+                tn.write(b"write\r")
+                tn.write(b"\r")
+                time.sleep(1)
                 
+                print("Next Router")
 
+                time.sleep(5)
 
+                # Config of PE
+                tn = telnetlib.Telnet("127.0.0.1", ports[toAttachTo["node_id"]])
+                time.sleep(1)
+                print("Opened telnet session for the PE node")
+
+                tn.write(b"\r")
+                tn.write(b"enable\r")
+                time.sleep(0.5)
+                if newVrf:
+                    tn.write(b"conf t\r")
+                    tn.write(f"vrf definition {vrf}\r".encode())
+                    tn.write(f"rd {rd}\r".encode())
+                    tn.write(f"route-target export {rt}\r".encode())
+                    tn.write(f"route-target import {rt}\r".encode())
+                    tn.write(b"address-family ipv4\r")
+                    tn.write(b"end\r")
+
+                time.sleep(0.5)
+
+                tn.write(b"conf t\r")
+                tn.write(f"inter {interfaceName2}\r".encode())
+                tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
+                tn.write(f"vrf forwarding {vrf}\r".encode())
+                tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
+                tn.write(b"no shutdown\r")
+                tn.write(b"exit\r")
+                time.sleep(0.5)
+
+                tn.write(b"router bgp 101\r")
+                tn.write(f"address-family ipv4 vrf {vrf}\r".encode())
+                tn.write(f"neighbor {ipAddress} remote-as {asn}\r".encode())
+                tn.write(f"neighbor {ipAddress} activate\r".encode())
+                tn.write(b"exit\r")
+                time.sleep(0.5)   
+            
+                tn.write(b"end\r")
+                tn.write(b"write\r")
+                tn.write(b"\r")
+                time.sleep(1)
+print("End")
                 
                 
                 
