@@ -174,18 +174,7 @@ if __name__ == '__main__':
                 
                 # Config of the new node
 
-                tn.write(b"\r")
-                time.sleep(1)
-                tn.write(b"\r")
-                time.sleep(1)
-                tn.write(b"\r")
-                time.sleep(1)
                 tn.write(b"no\r")
-                time.sleep(1)
-                tn.write(b"\r")
-                time.sleep(1)
-                tn.write(b"\r")
-                time.sleep(5)
                 tn.write(b"\r")
                 time.sleep(1)
                 tn.write(b"enable\r")  
