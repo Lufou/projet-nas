@@ -427,7 +427,6 @@ for router, port in ports.items():
                     tn.write(f"neighbor {voisin['addr']} activate\r".encode())
                     time.sleep(0.5)
                 tn.write(b"exit-address-family\r")
-                tn.write(b"end\r")
                 time.sleep(0.5)
         tn.write(b"end\r") 
 
