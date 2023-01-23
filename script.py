@@ -26,7 +26,9 @@ def serverQuery(endpoint, type="get", data1={}, jsonPayload=None):
 
 def showHelp():
     # print commands help here
-    print("")
+    print("script.py help - Show commands help")
+    print("script.py init - Initialize a new GNS3 project based on the config.json file")
+    print("script.py addCustomer <pe> <name> <ipAddressCE> <ipAddressPE> <interfaceName1> <interfaceName2> <asn> <vrf> [<rd> <rt>] - Add a new CE to a PE in an existing project.")
 
 def get_nodes(project_id):
     return serverQuery(f"nodes").json()
@@ -34,8 +36,8 @@ def get_nodes(project_id):
 def getRouterByName(name):
     global project_id
     try:
-        # Prepare the data for the POST request
         if project_id == "":
+            # Retrieving the project_id of the opened project
             project_id = list(filter(lambda p: p['status'] == 'opened', serverQuery("projects").json()))[0]['project_id']
     except requests.exceptions.ConnectionError as e:
         print("Error: Impossible to connect to GNS3 server.\n")
@@ -57,9 +59,8 @@ if __name__ == '__main__':
         if (sys.argv[1] == "init"):
             import nas
         elif (sys.argv[1] == "addCustomer"):
-            # add customer <pe> <name> <asn> <flux vpn>
             if (len(sys.argv) < 10 or len(sys.argv) > 12):
-                print("Invalid command: addCustomer <pe> <name> <ipAddressCE> <ipAddressPE> <interfaceName1> <interfaceName2> <asn> <vrf> <rd> <rt>")
+                print("Invalid command: addCustomer <pe> <name> <ipAddressCE> <ipAddressPE> <interfaceName1> <interfaceName2> <asn> <vrf> [<rd> <rt>]")
             else:
                 toAttachTo = sys.argv[2]
                 customerName = sys.argv[3]
@@ -79,13 +80,13 @@ if __name__ == '__main__':
                 if newVrf:
                     rd = sys.argv[10]
                     rt = sys.argv[10]
-                # récupère la topologie GNS3, les routeurs etc...
+                # Retrieving the targeted PE node
                 print("Get PE router")
                 toAttachTo = getRouterByName(toAttachTo)
                 ports = {}
                 ports[toAttachTo["node_id"]] = toAttachTo["console"]
                 portsDest = toAttachTo["ports"]
-                # check si l'interface existe n'est pas déjà connecté
+                # Check if the interface is not already connected to something
                 print("Get links")
                 links = serverQuery("links").json()
                 exist = False
@@ -97,7 +98,7 @@ if __name__ == '__main__':
                                     exist = True
                                     break
                 if exist:
-                    print("L'interface du router cible est déjà occupé.")
+                    print(f"Target router interface {interfaceName2} is already connected to something else.")
                     exit(1)
                 
                 data = {
@@ -132,7 +133,7 @@ if __name__ == '__main__':
                         adapter2 = p["adapter_number"]
                 
                 if (adapter1 == -1 or adapter2 == -1):
-                    print("Impossible d'ajouter le lien : adapter1 ou adapter2 introuvable.")
+                    print("Unable to add the link: adapter1 or adapter2 not found.")
                     exit(1)
                 
                 payload = {
@@ -247,7 +248,9 @@ if __name__ == '__main__':
                     tn.write(b"write\r")
                     tn.write(b"\r")
                     time.sleep(1)
-print("End")
-                
+                print("End")
+        else:
+            print("Unknown command.")
+            showHelp()
                 
                 
