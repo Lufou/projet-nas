@@ -43,13 +43,6 @@
               }
         ],
     "OSPF_id": "3.3.3.3",
-    "OSPF_neighboripv4": [
-      [
-        "192.168.1.0",
-        "0.0.0.255",
-        "0"
-      ]
-    ],
     "ipcef": true
     },
     "P2": {
@@ -203,8 +196,8 @@
         {
           "name": "as100",
           "rd": "100:110",
-          "rt_import": "100:1000",
-          "rt_export": "100:1000"
+          "rt_import": ["100:1000"],
+          "rt_export": ["100:1000"]
         }],
     
     "ipcef": true
@@ -260,7 +253,7 @@
       ],
       "neighbors_vpnv4": [
         {
-          "addr": "2.2.2.2"
+          "addr": "1.1.1.1"
         }
       ],
       "neighbors_vrf": [
@@ -279,8 +272,8 @@
         {
           "name": "as102",
           "rd": "100:110",
-          "rt_import": "100:1000",
-          "rt_export": "100:1000"
+          "rt_import": ["100:1000"],
+          "rt_export": ["100:1000"]
         }],
     
     "ipcef": true
