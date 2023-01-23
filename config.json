@@ -1,5 +1,5 @@
 {
-    "Project_name": "hamie2",
+    "Project_name": "beny",
     "P1": {
         "Type":"c7200",
         "interfaces":[
@@ -144,7 +144,7 @@
                   "255.255.255.0"
                 ],
                 "OSPF_area": 0,
-                "VRF":"as100"
+                "VRF":"VRF1"
               },
               {
                 "InterfaceName": "GigabitEthernet2/0",
@@ -158,7 +158,13 @@
               },
               {
                 "InterfaceName": "GigabitEthernet3/0",
-                "Link": "CE3"
+                "Link": "CE3",
+                "IPv4": [
+                  "192.168.1.3",
+                  "255.255.255.0"
+                ],
+                "OSPF_area": 0,
+                "VRF":"VRF2"
               }
         ],
     "OSPF_id": "1.1.1.1",
@@ -182,11 +188,18 @@
         ],
         "neighbors_vrf": [
           {
-            "VRF": "as100",
+            "VRF": "VRF1",
             "neighbors":[
               {
                 "AS":"100",
                 "addr":"192.168.1.1"
+            }]
+          },{
+           "VRF": "VRF2",
+            "neighbors":[
+              {
+                "AS":"100",
+                "addr":"192.168.1.4"
             }
           ]
           }
@@ -194,11 +207,18 @@
     },
     "VRF": [
         {
-          "name": "as100",
+          "name": "VRF1",
           "rd": "100:110",
           "rt_import": ["100:1000"],
           "rt_export": ["100:1000"]
-        }],
+        },
+        {
+          "name": "VRF2",
+          "rd": "100:120",
+          "rt_import": ["100:2000"],
+          "rt_export": ["100:2000"]
+        }
+      ],
     
     "ipcef": true
     },
@@ -220,7 +240,7 @@
                   "192.168.2.2",
                   "255.255.255.0"
                 ],
-                "VRF":"as102"
+                "VRF":"VRF1"
               },
               {
                 "InterfaceName": "GigabitEthernet2/0",
@@ -234,7 +254,12 @@
               },
               {
                 "InterfaceName": "GigabitEthernet3/0",
-                "Link": "CE4"
+                "Link": "CE4",
+                "IPv4": [
+                  "192.168.2.3",
+                  "255.255.255.0"
+                ],
+                "VRF":"VRF2"
               }
         ],
     "OSPF_id": "2.2.2.2",
@@ -258,11 +283,19 @@
       ],
       "neighbors_vrf": [
         {
-          "VRF": "as102",
+          "VRF": "VRF1",
           "neighbors":[
             {
               "AS":"102",
               "addr":"192.168.2.1"
+          }
+        ]
+        },
+        {"VRF": "VRF2",
+        "neighbors":[
+          {
+            "AS":"102",
+            "addr":"192.168.2.4"
           }
         ]
         }
@@ -270,11 +303,18 @@
   },
     "VRF": [
         {
-          "name": "as102",
+          "name": "VRF1",
           "rd": "100:110",
           "rt_import": ["100:1000"],
           "rt_export": ["100:1000"]
-        }],
+        },
+        {
+          "name": "VRF2",
+          "rd": "100:120",
+          "rt_import": ["100:2000"],
+          "rt_export": ["100:2000"]
+        }
+      ],
     
     "ipcef": true
     },
@@ -327,23 +367,51 @@
     "ipcef": true
     },
     "CE3": {
-        "Type":"c7200",
-        "interfaces":[
-              {
-                "InterfaceName": "GigabitEthernet1/0",
-                "Link": "PE1"
-              }
-        ],
+      "Type":"c7200",
+      "interfaces":[
+            {
+              "InterfaceName": "GigabitEthernet1/0",
+              "Link": "PE1",
+              "IPv4": [
+                "192.168.1.4",
+                "255.255.255.0"
+              ]
+            }
+      ],
+  "BGP": {
+      "AS": "100",
+      "redistribute":true,
+      "neighbors": [
+        {
+          "AS": 101,
+          "addr": "192.168.1.3"
+        }
+      ]
+      },
     "ipcef": true
     },
     "CE4": {
-        "Type":"c7200",
-        "interfaces":[
-              {
-                "InterfaceName": "GigabitEthernet1/0",
-                "Link": "PE2"
-              }
-        ],
+      "Type":"c7200",
+      "interfaces":[
+            {
+              "InterfaceName": "GigabitEthernet1/0",
+              "Link": "PE2",
+              "IPv4": [
+                "192.168.2.4",
+                "255.255.255.0"
+              ]
+            }
+      ],
+  "BGP": {
+      "AS": "102",
+      "redistribute":true,
+      "neighbors": [
+        {
+          "AS": 101,
+          "addr": "192.168.2.3"
+        }
+      ]
+  },
     "ipcef": true
     }
 }
