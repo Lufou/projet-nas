@@ -20,7 +20,7 @@ def serverQuery(endpoint, type="get", data1={}, jsonPayload=None):
     if (type == "get"):
         return requests.get(url, headers=headers)
     elif (type == "post"):
-        if jsonPayload is not None:
+        if jsonPayload != None:
             return requests.post(url, json=jsonPayload, headers=headers)
         return requests.post(url, data=json.dumps(data1), headers=headers)
 
@@ -35,7 +35,7 @@ def getRouterByName(name):
     global project_id
     try:
         # Prepare the data for the POST request
-        if (project_id is ""):
+        if project_id == "":
             project_id = list(filter(lambda p: p['status'] == 'opened', serverQuery("projects").json()))[0]['project_id']
     except requests.exceptions.ConnectionError as e:
         print("Error: Impossible to connect to GNS3 server.\n")
@@ -168,84 +168,85 @@ if __name__ == '__main__':
                     exit(1)
                 time.sleep(10)
 
-                tn = telnetlib.Telnet("127.0.0.1", ports[new_node_id])
-                time.sleep(1)
-                print("Opened telnet session for the new node")
-                
-                # Config of the new node
+                with telnetlib.Telnet("127.0.0.1", ports[new_node_id]) as tn:
+                    time.sleep(1)
+                    print("Opened telnet session for the new node")
+                    
+                    # Config of the new node
 
-                tn.write(b"no\r")
-                tn.write(b"\r")
-                time.sleep(1)
-                tn.write(b"enable\r")  
-                tn.write(b"conf t\r")
-                tn.write(f"hostname {customerName}\r".encode())
-                tn.write(b"ip cef\r")
-                tn.write(b"end\r")
-                time.sleep(0.5)
-
-                tn.write(b"conf t\r")
-                
-                tn.write(f"inter {interfaceName1}\r".encode())
-                tn.write(f"ip address {ipAddress} 255.255.255.0\r".encode())
-                tn.write(b"no shutdown\r")
-                tn.write(b"exit\r")
-                time.sleep(0.5)
-
-                tn.write(f"router bgp {asn}\r".encode())
-                tn.write(b"redistribute connected\r")
-                tn.write(f"neighbor {ipAddress2} remote-as 101\r".encode())
-                tn.write(b"exit\r")
-                time.sleep(0.5)
-            
-                tn.write(b"end\r")
-                tn.write(b"write\r")
-                tn.write(b"\r")
-                time.sleep(1)
-                
-                print("Next Router")
-
-                time.sleep(5)
-
-                # Config of PE
-                tn = telnetlib.Telnet("127.0.0.1", ports[toAttachTo["node_id"]])
-                time.sleep(1)
-                print("Opened telnet session for the PE node")
-
-                tn.write(b"\r")
-                tn.write(b"enable\r")
-                time.sleep(0.5)
-                if newVrf:
+                    tn.write(b"no\r")
+                    tn.write(b"\r")
+                    time.sleep(1)
+                    tn.write(b"enable\r")  
                     tn.write(b"conf t\r")
-                    tn.write(f"vrf definition {vrf}\r".encode())
-                    tn.write(f"rd {rd}\r".encode())
-                    tn.write(f"route-target export {rt}\r".encode())
-                    tn.write(f"route-target import {rt}\r".encode())
-                    tn.write(b"address-family ipv4\r")
+                    tn.write(f"hostname {customerName}\r".encode())
+                    tn.write(b"ip cef\r")
                     tn.write(b"end\r")
+                    time.sleep(0.5)
 
-                time.sleep(0.5)
+                    tn.write(b"conf t\r")
+                    
+                    tn.write(f"inter {interfaceName1}\r".encode())
+                    tn.write(f"ip address {ipAddress} 255.255.255.0\r".encode())
+                    tn.write(b"no shutdown\r")
+                    tn.write(b"exit\r")
+                    time.sleep(0.5)
 
-                tn.write(b"conf t\r")
-                tn.write(f"inter {interfaceName2}\r".encode())
-                tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
-                tn.write(f"vrf forwarding {vrf}\r".encode())
-                tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
-                tn.write(b"no shutdown\r")
-                tn.write(b"exit\r")
-                time.sleep(0.5)
+                    tn.write(f"router bgp {asn}\r".encode())
+                    tn.write(b"redistribute connected\r")
+                    tn.write(f"neighbor {ipAddress2} remote-as 101\r".encode())
+                    tn.write(b"exit\r")
+                    time.sleep(0.5)
+                
+                    tn.write(b"end\r")
+                    tn.write(b"write\r")
+                    tn.write(b"\r")
+                    time.sleep(1)
+                    
+                    print("Next Router")
 
-                tn.write(b"router bgp 101\r")
-                tn.write(f"address-family ipv4 vrf {vrf}\r".encode())
-                tn.write(f"neighbor {ipAddress} remote-as {asn}\r".encode())
-                tn.write(f"neighbor {ipAddress} activate\r".encode())
-                tn.write(b"exit\r")
-                time.sleep(0.5)   
-            
-                tn.write(b"end\r")
-                tn.write(b"write\r")
-                tn.write(b"\r")
-                time.sleep(1)
+                    time.sleep(5)
+
+                
+                # Config of PE
+                with telnetlib.Telnet("127.0.0.1", ports[toAttachTo["node_id"]]) as tn:
+                    time.sleep(1)
+                    print("Opened telnet session for the PE node")
+
+                    tn.write(b"\r")
+                    tn.write(b"enable\r")
+                    time.sleep(0.5)
+                    if newVrf:
+                        tn.write(b"conf t\r")
+                        tn.write(f"vrf definition {vrf}\r".encode())
+                        tn.write(f"rd {rd}\r".encode())
+                        tn.write(f"route-target export {rt}\r".encode())
+                        tn.write(f"route-target import {rt}\r".encode())
+                        tn.write(b"address-family ipv4\r")
+                        tn.write(b"end\r")
+
+                    time.sleep(0.5)
+
+                    tn.write(b"conf t\r")
+                    tn.write(f"inter {interfaceName2}\r".encode())
+                    tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
+                    tn.write(f"vrf forwarding {vrf}\r".encode())
+                    tn.write(f"ip address {ipAddress2} 255.255.255.0\r".encode())
+                    tn.write(b"no shutdown\r")
+                    tn.write(b"exit\r")
+                    time.sleep(0.5)
+
+                    tn.write(b"router bgp 101\r")
+                    tn.write(f"address-family ipv4 vrf {vrf}\r".encode())
+                    tn.write(f"neighbor {ipAddress} remote-as {asn}\r".encode())
+                    tn.write(f"neighbor {ipAddress} activate\r".encode())
+                    tn.write(b"exit\r")
+                    time.sleep(0.5)   
+                
+                    tn.write(b"end\r")
+                    tn.write(b"write\r")
+                    tn.write(b"\r")
+                    time.sleep(1)
 print("End")
                 
                 
